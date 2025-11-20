@@ -26,7 +26,7 @@ def visualize_explainability(config_path="configs/config.yaml"):
     print(f"Using device: {device}")
     
     # 데이터 로더 생성
-    _, test_loader, class_names = create_dataloaders(
+    _, _, test_loader, class_names = create_dataloaders(
         data_dir=config["data"]["test_dir"] if os.path.exists(config["data"]["test_dir"]) else config["data"]["train_dir"],
         batch_size=config["visualization"]["num_samples"],
         img_size=config["data"]["img_size"]

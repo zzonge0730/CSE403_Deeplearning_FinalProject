@@ -1,4 +1,3 @@
-
 import os
 import torch
 from torchvision import transforms, datasets
@@ -27,6 +26,7 @@ def create_dataloaders(data_dir, batch_size=32, img_size=224, split_ratio=(0.8, 
         # Kaggle에서 자동으로 데이터 경로 찾기 시도
         kaggle_input = "/kaggle/input"
         possible_paths = [
+            os.path.join(kaggle_input, "realifake", "Realifake"),
             os.path.join(kaggle_input, "realifake", "train"),
             os.path.join(kaggle_input, "realifake"),
             data_dir  # 원래 경로도 시도
@@ -86,14 +86,9 @@ def create_dataloaders(data_dir, batch_size=32, img_size=224, split_ratio=(0.8, 
     print(f"분할 완료 -> Train: {len(train_dataset)}, Val: {len(val_dataset)}, Test: {len(test_dataset)}")
 
     # DataLoader 생성
-    # Kaggle 노트북 환경 감지 및 num_workers 설정
-    is_kaggle = os.path.exists("/kaggle/input")
-    if is_kaggle:
-        # Kaggle 노트북: 멀티프로세싱 문제 방지를 위해 0 사용
-        max_workers = 0
-        print("🔍 Kaggle 노트북 환경 감지: num_workers=0 설정")
-    else:
-        max_workers = min(4, os.cpu_count() or 1)
+    # 🚨 [핵심 수정] num_workers를 2로 고정 (속도 최적화)
+    max_workers = 2
+    print(f"🚀 데이터 로더 워커 수: {max_workers} (속도 최적화)")
     
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, 
                               num_workers=max_workers, pin_memory=True if torch.cuda.is_available() else False)
@@ -127,4 +122,3 @@ if __name__ == '__main__':
         print(f"클래스: {classes}")
         print(f"첫 번째 배치의 라벨: {labels}")
         # 라벨 0: classes[0], 라벨 1: classes[1] 에 해당
-
