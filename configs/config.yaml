@@ -8,7 +8,7 @@ data:
   img_size: 224
   batch_size: 64
   num_workers: 4
-  train_split: 0.8
+  train_split: 0.8  # 참고: 실제 분할은 8:1:1 (train:val:test)로 고정됨
 
 # 모델 설정
 models:
@@ -24,7 +24,7 @@ models:
 
 # 학습 설정
 training:
-  num_epochs: 20
+  num_epochs: 10
   learning_rate: 0.0001  # 1e-4와 동일
   weight_decay: 0.0001  # 1e-4와 동일
   optimizer: "adam"  # adam, sgd

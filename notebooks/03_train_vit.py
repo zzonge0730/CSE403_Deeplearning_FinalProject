@@ -83,13 +83,21 @@ def train_vit(config_path="configs/config.yaml"):
     # 디바이스 설정
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
+    if torch.cuda.is_available():
+        print(f"GPU: {torch.cuda.get_device_name(0)}")
+        print(f"GPU Memory: {torch.cuda.get_device_properties(0).total_memory / 1024**3:.2f} GB")
     
-    # 데이터 로더 생성
-    train_loader, val_loader, class_names = create_dataloaders(
+    # 데이터 로더 생성 (test_loader는 무시)
+    train_loader, val_loader, _, class_names = create_dataloaders(
         data_dir=config["data"]["train_dir"],
         batch_size=config["data"]["batch_size"],
         img_size=config["data"]["img_size"]
     )
+    
+    # 데이터 로더 None 체크
+    if train_loader is None or val_loader is None or class_names is None:
+        print("❌ 데이터 로더 생성 실패. 프로그램을 종료합니다.")
+        return None, None
     
     print(f"Classes: {class_names}")
     print(f"Train samples: {len(train_loader.dataset)}")
@@ -151,7 +159,9 @@ def train_vit(config_path="configs/config.yaml"):
         "val_acc": []
     }
     
-    best_val_acc = 0.0
+    best_val_acc = -1.0  # 초기값을 -1로 설정 (첫 epoch에서 무조건 저장되도록)
+    patience = 3  # Early stopping patience
+    patience_counter = 0
     
     # 학습 루프
     for epoch in range(num_epochs):
@@ -182,9 +192,10 @@ def train_vit(config_path="configs/config.yaml"):
         print(f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.2f}%")
         print(f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%")
         
-        # 최고 성능 모델 저장
+        # 최고 성능 모델 저장 및 Early Stopping 체크
         if val_acc > best_val_acc:
             best_val_acc = val_acc
+            patience_counter = 0  # 성능 개선 시 카운터 리셋
             save_dir = config["training"]["save_dir"]
             os.makedirs(save_dir, exist_ok=True)
             model_path = os.path.join(save_dir, f"vit_{config['models']['vit']['name']}_best.pth")
@@ -196,6 +207,12 @@ def train_vit(config_path="configs/config.yaml"):
                 "history": history
             }, model_path)
             print(f"Saved best model (Val Acc: {val_acc:.2f}%)")
+        else:
+            patience_counter += 1
+            if patience_counter >= patience:
+                print(f"\nEarly stopping triggered! No improvement for {patience} epochs.")
+                print(f"Best Val Accuracy: {best_val_acc:.2f}%")
+                break
     
     writer.close()
     

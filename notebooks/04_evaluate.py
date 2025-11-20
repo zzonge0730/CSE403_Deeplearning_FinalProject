@@ -28,12 +28,20 @@ def evaluate_all_models(config_path="configs/config.yaml"):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
     
-    # 데이터 로더 생성
-    _, test_loader, class_names = create_dataloaders(
+    # 데이터 로더 생성 (test_loader 사용 - 진짜 테스트셋!)
+    # 주의: 학습 시와 동일한 시드(42)로 분할하므로 같은 test set이 생성됩니다
+    _, _, test_loader, class_names = create_dataloaders(
         data_dir=config["data"]["test_dir"] if os.path.exists(config["data"]["test_dir"]) else config["data"]["train_dir"],
         batch_size=config["data"]["batch_size"],
         img_size=config["data"]["img_size"]
     )
+    
+    # 데이터 로더 None 체크
+    if test_loader is None or class_names is None:
+        print("❌ 테스트 데이터 로더 생성 실패. 프로그램을 종료합니다.")
+        return
+    
+    print(f"\n🔍 Final Evaluation on {len(test_loader.dataset)} Test Images (Unseen Data)")
     
     results = {}
     

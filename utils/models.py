@@ -68,18 +68,26 @@ def load_model(model_path: str, model_type: str = "cnn", model_name: str = "resn
     else:
         raise ValueError(f"지원하지 않는 모델 타입: {model_type}")
     
-    checkpoint = torch.load(model_path, map_location=device)
+    try:
+        checkpoint = torch.load(model_path, map_location=device)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"모델 파일을 찾을 수 없습니다: {model_path}")
+    except Exception as e:
+        raise RuntimeError(f"모델 로드 중 오류 발생: {e}")
     
     # 체크포인트 형식에 따라 가중치 로드
-    if isinstance(checkpoint, dict):
-        if "model_state_dict" in checkpoint:
-            model.load_state_dict(checkpoint["model_state_dict"])
-        elif "state_dict" in checkpoint:
-            model.load_state_dict(checkpoint["state_dict"])
+    try:
+        if isinstance(checkpoint, dict):
+            if "model_state_dict" in checkpoint:
+                model.load_state_dict(checkpoint["model_state_dict"])
+            elif "state_dict" in checkpoint:
+                model.load_state_dict(checkpoint["state_dict"])
+            else:
+                model.load_state_dict(checkpoint)
         else:
             model.load_state_dict(checkpoint)
-    else:
-        model.load_state_dict(checkpoint)
+    except Exception as e:
+        raise RuntimeError(f"모델 가중치 로드 실패: {e}. 모델 구조가 일치하는지 확인하세요.")
     
     model.to(device)
     model.eval()
