@@ -1,0 +1,56 @@
+# 프로젝트 설정 파일
+
+# 데이터 설정
+data:
+  root_dir: "data"
+  train_dir: "data/train"
+  test_dir: "data/test"
+  img_size: 224
+  batch_size: 64
+  num_workers: 4
+  train_split: 0.8
+
+# 모델 설정
+models:
+  cnn:
+    name: "resnet50"  # resnet50, efficientnet_b0
+    pretrained: true
+    num_classes: 2
+  
+  vit:
+    name: "vit_base_patch16_224"  # vit_base_patch16_224, swin_base_patch4_window7_224
+    pretrained: true
+    num_classes: 2
+
+# 학습 설정
+training:
+  num_epochs: 20
+  learning_rate: 1e-4
+  weight_decay: 1e-4
+  optimizer: "adam"  # adam, sgd
+  scheduler: "cosine"  # cosine, step
+  save_dir: "models"
+  log_dir: "results/logs"
+
+# 평가 설정
+evaluation:
+  metrics: ["accuracy", "f1_score", "precision", "recall", "confusion_matrix"]
+  save_dir: "results/metrics"
+
+# 시각화 설정
+visualization:
+  save_dir: "results/visualizations"
+  num_samples: 20
+  gradcam_layer: "layer4"  # ResNet의 마지막 레이어
+
+# Robustness 테스트 설정
+robustness:
+  noise_levels: [0.01, 0.05, 0.1, 0.2]
+  jpeg_qualities: [95, 85, 75, 65, 55]
+  save_dir: "results/metrics"
+
+# 효율성 측정 설정
+efficiency:
+  num_runs: 100
+  warmup_runs: 10
+  save_dir: "results/metrics"
