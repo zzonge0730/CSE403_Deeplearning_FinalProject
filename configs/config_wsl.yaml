@@ -25,8 +25,8 @@ models:
 # 학습 설정
 training:
   num_epochs: 10  # 빠른 테스트를 위해 줄임
-  learning_rate: 1e-4
-  weight_decay: 1e-4
+  learning_rate: 0.0001  # 1e-4와 동일
+  weight_decay: 0.0001  # 1e-4와 동일
   optimizer: "adam"
   scheduler: "cosine"
   save_dir: "models"

@@ -109,24 +109,29 @@ def train_cnn(config_path="configs/config.yaml"):
     # 손실 함수 및 옵티마이저
     criterion = nn.CrossEntropyLoss()
     
+    # 설정값을 숫자로 변환 (YAML에서 문자열로 읽힐 수 있음)
+    learning_rate = float(config["training"]["learning_rate"])
+    weight_decay = float(config["training"]["weight_decay"])
+    
     if config["training"]["optimizer"] == "adam":
         optimizer = optim.Adam(
             model.parameters(),
-            lr=config["training"]["learning_rate"],
-            weight_decay=config["training"]["weight_decay"]
+            lr=learning_rate,
+            weight_decay=weight_decay
         )
     else:
         optimizer = optim.SGD(
             model.parameters(),
-            lr=config["training"]["learning_rate"],
+            lr=learning_rate,
             momentum=0.9,
-            weight_decay=config["training"]["weight_decay"]
+            weight_decay=weight_decay
         )
     
     # 스케줄러
+    num_epochs = int(config["training"]["num_epochs"])
     if config["training"]["scheduler"] == "cosine":
         scheduler = optim.lr_scheduler.CosineAnnealingLR(
-            optimizer, T_max=config["training"]["num_epochs"]
+            optimizer, T_max=num_epochs
         )
     else:
         scheduler = optim.lr_scheduler.StepLR(
@@ -149,8 +154,8 @@ def train_cnn(config_path="configs/config.yaml"):
     best_val_acc = 0.0
     
     # 학습 루프
-    for epoch in range(config["training"]["num_epochs"]):
-        print(f"\nEpoch {epoch+1}/{config['training']['num_epochs']}")
+    for epoch in range(num_epochs):
+        print(f"\nEpoch {epoch+1}/{num_epochs}")
         
         # 학습
         train_loss, train_acc = train_epoch(model, train_loader, criterion, optimizer, device)

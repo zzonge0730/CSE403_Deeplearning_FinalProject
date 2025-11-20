@@ -55,8 +55,14 @@ def create_dataloaders(data_dir, batch_size=32, img_size=224):
     # 4. DataLoader 생성
     #    - shuffle=True: 학습 시 데이터 순서를 섞어 모델이 순서에 의존하지 않도록 함
     #    - num_workers: 데이터를 미리 불러올 프로세스 수 (CPU 코어 수에 맞게 조절)
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
+    # num_workers 조정 (시스템에 맞게)
+    import os
+    max_workers = min(4, os.cpu_count() or 1)
+    
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, 
+                              num_workers=max_workers, pin_memory=True)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, 
+                           num_workers=max_workers, pin_memory=True)
 
     return train_loader, val_loader, class_names
 
