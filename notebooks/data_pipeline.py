@@ -19,6 +19,8 @@ def create_dataloaders(data_dir, batch_size=32, img_size=224):
         tuple: (train_loader, val_loader, class_names)
                학습용 DataLoader, 검증용 DataLoader, 클래스 이름 리스트.
     """
+    torch.manual_seed(42)
+    torch.cuda.manual_seed(42)
     # 1. 이미지 전처리 정책 정의
     #    - 모든 이미지를 224x224 크기로 조정
     #    - 이미지를 PyTorch 텐서로 변환 (0~1 값으로 정규화)
