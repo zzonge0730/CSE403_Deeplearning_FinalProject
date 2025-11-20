@@ -37,13 +37,37 @@ deeplearning/
 ```
 
 ## 설치 방법
+
+### 기본 설치
 ```bash
 pip install -r requirements.txt
 ```
 
+### Kaggle 데이터셋 사용 시
+```bash
+pip install kaggle
+# Kaggle API 토큰 설정 필요 (자세한 내용은 KAGGLE_SETUP.md 참고)
+```
+
 ## 사용 방법
 
-### 1. 데이터 준비
+### 로컬 환경 (WSL/Linux)
+
+#### 1. 데이터 준비
+
+**방법 A: Kaggle에서 자동 다운로드 (권장)**
+```bash
+# Kaggle API 설정 후
+python scripts/download_kaggle.py --dataset sattyam96/realifake
+```
+
+**방법 B: 기존 데이터 준비**
+```bash
+# Realifake 폴더가 있는 경우
+python scripts/prepare_data.py --source /path/to/Realifake --target data/train --mode copy
+```
+
+**방법 C: 수동 준비**
 데이터셋을 `data/` 폴더에 다음 구조로 배치:
 ```
 data/
@@ -55,16 +79,19 @@ data/
     └── fake/
 ```
 
-### 2. 모델 학습
+자세한 내용은 `DATA_PREPARATION.md` 및 `KAGGLE_SETUP.md` 참고
+
+#### 2. 모델 학습
 ```bash
 # CNN 모델 학습
 python notebooks/02_train_cnn.py
 
-# ViT 모델 학습
-python notebooks/03_train_vit.py
+# ViT 모델 학습 (경량 설정 사용)
+python notebooks/02_train_cnn.py --config configs/config_wsl.yaml
+python notebooks/03_train_vit.py --config configs/config_wsl.yaml
 ```
 
-### 3. 평가 및 시각화
+#### 3. 평가 및 시각화
 ```bash
 # 모델 평가
 python notebooks/04_evaluate.py
@@ -77,6 +104,31 @@ python notebooks/06_robustness.py
 
 # 효율성 분석
 python notebooks/07_efficiency.py
+```
+
+### Google Colab 환경
+
+#### 빠른 시작
+1. `colab_notebook.ipynb` 파일을 Colab에 업로드
+2. Google Drive에 프로젝트 폴더 업로드
+3. 노트북 실행
+
+#### 상세 가이드
+`COLAB_GUIDE.md` 파일을 참고하세요.
+
+#### 주요 단계
+```python
+# 1. Drive 마운트
+from google.colab import drive
+drive.mount('/content/drive')
+os.chdir('/content/drive/MyDrive/deeplearning')
+
+# 2. 패키지 설치
+!pip install -r requirements.txt
+
+# 3. 학습 실행
+!python notebooks/02_train_cnn.py
+!python notebooks/03_train_vit.py
 ```
 
 ## 실험 결과
