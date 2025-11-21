@@ -45,10 +45,10 @@ def visualize_gradcam(model: torch.nn.Module, images: torch.Tensor, labels: torc
         cam_sig = {}
 
     cam_instance = None
+    cam_device = device if isinstance(device, str) else getattr(device, "type", "cpu")
     if "device" in cam_sig:
         cam_instance = GradCAM(model=model, target_layers=target_layers, device=device)
     elif "use_cuda" in cam_sig:
-        cam_device = device if isinstance(device, str) else getattr(device, "type", "cpu")
         cam_instance = GradCAM(model=model, target_layers=target_layers, use_cuda=(cam_device == "cuda"))
     else:
         cam_instance = GradCAM(model=model, target_layers=target_layers)
