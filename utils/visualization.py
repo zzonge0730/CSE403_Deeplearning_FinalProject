@@ -36,32 +36,30 @@ def visualize_gradcam(model: torch.nn.Module, images: torch.Tensor, labels: torc
     images = images.to(device)
     
     # Grad-CAM 생성
-    cam = GradCAM(model=model, target_layers=target_layers, use_cuda=(device == "cuda"))
-    
-    # 각 이미지에 대해 Grad-CAM 생성
     gradcam_images = []
-    
-    for i in range(images.shape[0]):
-        # 예측 클래스에 대한 Grad-CAM
-        with torch.no_grad():
-            outputs = model(images[i:i+1])
-            _, pred = torch.max(outputs, 1)
-            pred_class = pred[0].item()
-        
-        targets = [ClassifierOutputTarget(pred_class)]
-        grayscale_cam = cam(input_tensor=images[i:i+1], targets=targets)[0]
-        
-        # 이미지 전처리 (정규화 해제)
-        img = images[i].cpu().permute(1, 2, 0).numpy()
-        img = (img - img.min()) / (img.max() - img.min())  # 0-1 정규화
-        
-        # RGB로 변환 (필요한 경우)
-        if img.shape[2] == 3:
-            visualization = show_cam_on_image(img, grayscale_cam, use_rgb=True)
-        else:
-            visualization = show_cam_on_image(img[:, :, 0], grayscale_cam, use_rgb=False)
-        
-        gradcam_images.append(visualization)
+    cam_device = device if isinstance(device, str) else device.type
+    with GradCAM(model=model, target_layers=target_layers, device=cam_device) as cam:
+        for i in range(images.shape[0]):
+            # 예측 클래스에 대한 Grad-CAM
+            with torch.no_grad():
+                outputs = model(images[i:i+1])
+                _, pred = torch.max(outputs, 1)
+                pred_class = pred[0].item()
+            
+            targets = [ClassifierOutputTarget(pred_class)]
+            grayscale_cam = cam(input_tensor=images[i:i+1], targets=targets)[0]
+            
+            # 이미지 전처리 (정규화 해제)
+            img = images[i].cpu().permute(1, 2, 0).numpy()
+            img = (img - img.min()) / (img.max() - img.min())  # 0-1 정규화
+            
+            # RGB로 변환 (필요한 경우)
+            if img.shape[2] == 3:
+                visualization = show_cam_on_image(img, grayscale_cam, use_rgb=True)
+            else:
+                visualization = show_cam_on_image(img[:, :, 0], grayscale_cam, use_rgb=False)
+            
+            gradcam_images.append(visualization)
     
     gradcam_images = np.array(gradcam_images)
     
