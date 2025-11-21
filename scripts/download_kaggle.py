@@ -21,7 +21,7 @@ def check_kaggle_api():
     kaggle_json = kaggle_dir / "kaggle.json"
     
     if not kaggle_json.exists():
-        print("❌ kaggle.json 파일을 찾을 수 없습니다.")
+        print("kaggle.json 파일을 찾을 수 없습니다.")
         print("\n설정 방법:")
         print("1. https://www.kaggle.com/settings 에서 API 토큰 다운로드")
         print("2. kaggle.json 파일을 ~/.kaggle/ 폴더에 배치")
@@ -31,11 +31,11 @@ def check_kaggle_api():
     # 권한 확인
     stat = os.stat(kaggle_json)
     if stat.st_mode & 0o077 != 0:
-        print("⚠️ kaggle.json 권한이 너무 열려있습니다.")
+        print("kaggle.json 권한이 너무 열려있습니다.")
         print("권한 설정: chmod 600 ~/.kaggle/kaggle.json")
         return False
     
-    print("✓ Kaggle API 설정 확인됨")
+    print("Kaggle API 설정 확인됨")
     return True
 
 
@@ -54,10 +54,10 @@ def setup_kaggle_api(kaggle_json_path=None):
         if source.exists():
             shutil.copy(source, kaggle_dir / "kaggle.json")
             os.chmod(kaggle_dir / "kaggle.json", 0o600)
-            print(f"✓ kaggle.json 복사 완료: {source} -> {kaggle_dir / 'kaggle.json'}")
+            print(f"kaggle.json 복사 완료: {source} -> {kaggle_dir / 'kaggle.json'}")
             return True
         else:
-            print(f"❌ 파일을 찾을 수 없습니다: {kaggle_json_path}")
+            print(f"파일을 찾을 수 없습니다: {kaggle_json_path}")
             return False
     else:
         print("\nKaggle API 토큰이 필요합니다:")
@@ -82,7 +82,7 @@ def download_dataset(dataset_name, output_dir="data"):
     
     # Kaggle API 확인
     if not check_kaggle_api():
-        print("\n⚠️ Kaggle API가 설정되지 않았습니다.")
+        print("\nKaggle API가 설정되지 않았습니다.")
         print("설정 후 다시 시도하세요.")
         return False
     
@@ -99,13 +99,13 @@ def download_dataset(dataset_name, output_dir="data"):
             text=True,
             check=True
         )
-        print("✓ 다운로드 완료")
+        print("다운로드 완료")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"❌ 다운로드 실패: {e.stderr}")
+        print(f"다운로드 실패: {e.stderr}")
         return False
     except FileNotFoundError:
-        print("❌ kaggle 명령어를 찾을 수 없습니다.")
+        print("kaggle 명령어를 찾을 수 없습니다.")
         print("설치: pip install kaggle")
         return False
 
@@ -124,7 +124,7 @@ def extract_and_prepare(dataset_zip, target_dir="data/train"):
     
     zip_path = Path(dataset_zip)
     if not zip_path.exists():
-        print(f"❌ 파일을 찾을 수 없습니다: {dataset_zip}")
+        print(f"파일을 찾을 수 없습니다: {dataset_zip}")
         return False
     
     # 임시 압축 해제 디렉토리
@@ -139,9 +139,9 @@ def extract_and_prepare(dataset_zip, target_dir="data/train"):
             file_list = zip_ref.namelist()
             for file in tqdm(file_list, desc="압축 해제"):
                 zip_ref.extract(file, temp_dir)
-        print("✓ 압축 해제 완료")
+        print("압축 해제 완료")
     except Exception as e:
-        print(f"❌ 압축 해제 실패: {e}")
+        print(f"압축 해제 실패: {e}")
         return False
     
     # 데이터 구조 확인 및 변환
@@ -166,12 +166,12 @@ def extract_and_prepare(dataset_zip, target_dir="data/train"):
         if fake_path.exists() and real_path.exists():
             fake_dir = fake_path
             real_dir = real_path
-            print(f"✓ 데이터 구조 발견: {fake_name}/, {real_name}/")
+            print(f"데이터 구조 발견: {fake_name}/, {real_name}/")
             break
     
     if fake_dir is None or real_dir is None:
         # 폴더 구조 출력하여 사용자에게 확인 요청
-        print("\n⚠️ 표준 폴더 구조를 찾을 수 없습니다.")
+        print("\n표준 폴더 구조를 찾을 수 없습니다.")
         print("압축 해제된 폴더 구조:")
         for item in sorted(temp_dir.rglob("*"))[:20]:
             if item.is_dir():
@@ -271,13 +271,13 @@ def download_and_prepare(dataset_name="sattyam96/realifake", output_dir="data", 
         if zip_files:
             zip_file = zip_files[0]
         else:
-            print(f"❌ 압축 파일을 찾을 수 없습니다: {output_dir}")
+            print(f"압축 파일을 찾을 수 없습니다: {output_dir}")
             return False
     
     if not extract_and_prepare(zip_file, target_dir):
         return False
     
-    print("\n✅ 모든 작업 완료!")
+    print("\n모든 작업 완료!")
     print(f"\n다음 단계:")
     print(f"  python notebooks/data_pipeline.py  # 데이터 로더 테스트")
     
@@ -302,9 +302,9 @@ if __name__ == "__main__":
     # API 설정이 요청된 경우
     if args.setup_api:
         if setup_kaggle_api(args.setup_api):
-            print("✓ API 설정 완료")
+            print("API 설정 완료")
         else:
-            print("❌ API 설정 실패")
+            print("API 설정 실패")
             exit(1)
     
     # 다운로드 및 준비

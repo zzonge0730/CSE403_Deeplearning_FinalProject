@@ -38,10 +38,10 @@ def evaluate_all_models(config_path="configs/config.yaml"):
     
     # 데이터 로더 None 체크
     if test_loader is None or class_names is None:
-        print("❌ 테스트 데이터 로더 생성 실패. 프로그램을 종료합니다.")
+        print("테스트 데이터 로더 생성에 실패했습니다. 프로그램을 종료합니다.")
         return
     
-    print(f"\n🔍 Final Evaluation on {len(test_loader.dataset)} Test Images (Unseen Data)")
+    print(f"\nFinal Evaluation on {len(test_loader.dataset)} Test Images (Unseen Data)")
     
     results = {}
     

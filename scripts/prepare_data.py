@@ -20,7 +20,7 @@ def check_data_structure(source_dir):
     source_path = Path(source_dir)
     
     if not source_path.exists():
-        print(f"❌ 경로를 찾을 수 없습니다: {source_dir}")
+        print(f"경로를 찾을 수 없습니다: {source_dir}")
         return None
     
     # FAKE, REAL 폴더 확인
@@ -126,7 +126,7 @@ def analyze_images(source_dir, sample_size=100):
         print(f"\n평균 이미지 크기: {avg_size[0]:.0f}x{avg_size[1]:.0f}")
     
     if invalid_files:
-        print(f"\n⚠️ 손상된 파일: {len(invalid_files)}개")
+        print(f"\n경고: 손상된 파일 {len(invalid_files)}개")
         for name, error in invalid_files[:5]:
             print(f"  - {name}: {error}")
     
@@ -168,7 +168,7 @@ def prepare_data(source_dir, target_dir="data/train", copy_mode=True,
     real_source = source_path / "REAL"
     
     if not fake_source.exists() and not real_source.exists():
-        print(f"❌ FAKE 또는 REAL 폴더를 찾을 수 없습니다: {source_dir}")
+        print(f"FAKE 또는 REAL 폴더를 찾을 수 없습니다: {source_dir}")
         return False
     
     copied_count = {"fake": 0, "real": 0}
@@ -204,7 +204,7 @@ def prepare_data(source_dir, target_dir="data/train", copy_mode=True,
                 copied_count["fake"] += 1
             except Exception as e:
                 error_count["fake"] += 1
-                print(f"\n⚠️ 오류 ({img_path.name}): {e}")
+                print(f"\n오류 ({img_path.name}): {e}")
     
     # REAL 이미지 복사/이동
     if real_source.exists():
@@ -235,7 +235,7 @@ def prepare_data(source_dir, target_dir="data/train", copy_mode=True,
                 copied_count["real"] += 1
             except Exception as e:
                 error_count["real"] += 1
-                print(f"\n⚠️ 오류 ({img_path.name}): {e}")
+                print(f"\n오류 ({img_path.name}): {e}")
     
     # 결과 출력
     print("\n" + "="*50)
@@ -279,17 +279,17 @@ def create_symlink(source_dir, target_dir="data/train"):
             if fake_target.exists():
                 fake_target.unlink()
             fake_target.symlink_to(fake_source)
-            print(f"✓ FAKE 링크 생성: {fake_target} -> {fake_source}")
+            print(f"FAKE 링크 생성: {fake_target} -> {fake_source}")
         
         if real_source.exists():
             if real_target.exists():
                 real_target.unlink()
             real_target.symlink_to(real_source)
-            print(f"✓ REAL 링크 생성: {real_target} -> {real_source}")
+            print(f"REAL 링크 생성: {real_target} -> {real_source}")
         
         return True
     except Exception as e:
-        print(f"❌ 심볼릭 링크 생성 실패: {e}")
+        print(f"심볼릭 링크 생성 실패: {e}")
         print("   Windows에서는 관리자 권한이 필요할 수 있습니다.")
         return False
 
@@ -331,5 +331,5 @@ if __name__ == "__main__":
                 check_images=not args.no_check
             )
         
-        print("\n✅ 데이터 준비 완료!")
+        print("\n데이터 준비 완료!")
         print(f"다음 단계: python notebooks/data_pipeline.py로 데이터 로더 테스트")

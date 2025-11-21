@@ -19,31 +19,31 @@ python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}'); 
 echo ""
 echo "3. 디렉토리 구조 확인 중..."
 if [ -d "notebooks" ]; then
-    echo "✓ notebooks 폴더 확인됨"
+    echo "notebooks 폴더 확인됨"
 else
-    echo "✗ notebooks 폴더를 찾을 수 없습니다"
+    echo "notebooks 폴더를 찾을 수 없습니다"
 fi
 
 if [ -d "utils" ]; then
-    echo "✓ utils 폴더 확인됨"
+    echo "utils 폴더 확인됨"
 else
-    echo "✗ utils 폴더를 찾을 수 없습니다"
+    echo "utils 폴더를 찾을 수 없습니다"
 fi
 
 if [ -d "configs" ]; then
-    echo "✓ configs 폴더 확인됨"
+    echo "configs 폴더 확인됨"
 else
-    echo "✗ configs 폴더를 찾을 수 없습니다"
+    echo "configs 폴더를 찾을 수 없습니다"
 fi
 
 # 4. 데이터 확인
 echo ""
 echo "4. 데이터 확인 중..."
 if [ -d "data" ]; then
-    echo "✓ data 폴더 확인됨"
+    echo "data 폴더 확인됨"
     echo "  파일 수: $(find data -type f | wc -l)"
 else
-    echo "⚠ data 폴더를 찾을 수 없습니다"
+    echo "data 폴더를 찾을 수 없습니다"
     echo "  데이터를 준비하세요:"
     echo "  - Google Drive에 업로드"
     echo "  - 또는 Kaggle에서 다운로드"

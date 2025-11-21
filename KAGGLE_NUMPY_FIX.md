@@ -79,9 +79,9 @@ print(f"NumPy 경로: {np.__file__}")
 
 # NumPy 1.x인지 확인
 if int(np.__version__.split('.')[0]) >= 2:
-    print("❌ NumPy 2.x가 로드되었습니다!")
+    print("NumPy 2.x가 로드되었습니다!")
     print("   Python 세션을 재시작하세요.")
 else:
-    print("✅ NumPy 1.x 확인됨!")
+    print("NumPy 1.x 확인됨!")
 ```
 

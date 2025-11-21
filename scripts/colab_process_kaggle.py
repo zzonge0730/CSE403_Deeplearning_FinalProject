@@ -33,11 +33,11 @@ def process_kaggle_data(zip_path="data/realifake.zip", target_dir="data/train"):
         import zipfile
         with zipfile.ZipFile(zip_file, 'r') as zip_ref:
             zip_ref.extractall(temp_dir)
-        print("✓ 압축 해제 완료")
+        print("압축 해제 완료")
     elif temp_dir.exists():
-        print("✓ 이미 압축 해제된 폴더 발견")
+        print("이미 압축 해제된 폴더 발견")
     else:
-        print(f"❌ ZIP 파일을 찾을 수 없습니다: {zip_path}")
+        print(f"ZIP 파일을 찾을 수 없습니다: {zip_path}")
         print("다운로드: !kaggle datasets download -d sattyam96/realifake -p data/")
         return False
     
@@ -63,15 +63,15 @@ def process_kaggle_data(zip_path="data/realifake.zip", target_dir="data/train"):
                 break
     
     if not fake_source.exists() or not real_source.exists():
-        print("⚠️ 표준 폴더 구조를 찾을 수 없습니다.")
+        print("표준 폴더 구조를 찾을 수 없습니다.")
         print("압축 해제된 폴더 구조:")
         for item in sorted(temp_dir.rglob("*"))[:20]:
             if item.is_dir():
-                print(f"  📁 {item.relative_to(temp_dir)}")
+                print(f"  {item.relative_to(temp_dir)}")
         return False
     
-    print(f"✓ FAKE 폴더: {fake_source}")
-    print(f"✓ REAL 폴더: {real_source}")
+    print(f"FAKE 폴더: {fake_source}")
+    print(f"REAL 폴더: {real_source}")
     
     # 3. 데이터 준비
     print("\n3. 데이터 준비 중...")
@@ -86,7 +86,7 @@ def process_kaggle_data(zip_path="data/realifake.zip", target_dir="data/train"):
             shutil.rmtree(fake_target)
         shutil.copytree(fake_source, fake_target)
         fake_count = len(list(fake_target.glob("*")))
-        print(f"✓ FAKE → fake: {fake_count:,}개")
+        print(f"FAKE → fake: {fake_count:,}개")
     
     # REAL → real
     if real_source.exists():
@@ -94,7 +94,7 @@ def process_kaggle_data(zip_path="data/realifake.zip", target_dir="data/train"):
             shutil.rmtree(real_target)
         shutil.copytree(real_source, real_target)
         real_count = len(list(real_target.glob("*")))
-        print(f"✓ REAL → real: {real_count:,}개")
+        print(f"REAL → real: {real_count:,}개")
     
     # 4. 정리
     print("\n4. 임시 파일 정리 중...")
@@ -104,7 +104,7 @@ def process_kaggle_data(zip_path="data/realifake.zip", target_dir="data/train"):
         zip_file.unlink()  # ZIP 파일 삭제 (선택사항)
     
     print("\n" + "="*50)
-    print("✅ 데이터 준비 완료!")
+    print("데이터 준비 완료!")
     print("="*50)
     print(f"위치: {target_path.absolute()}")
     print(f"FAKE: {fake_count:,}개")

@@ -33,7 +33,7 @@ def create_dataloaders(data_dir, batch_size=32, img_size=224, split_ratio=(0.8, 
         ]
         for path in possible_paths:
             if os.path.exists(path):
-                print(f"🔍 Kaggle 노트북: 데이터 경로 자동 감지 -> {path}")
+                print(f"Kaggle 노트북: 데이터 경로 자동 감지 -> {path}")
                 data_dir = path
                 break
     
@@ -56,12 +56,12 @@ def create_dataloaders(data_dir, batch_size=32, img_size=224, split_ratio=(0.8, 
         print(f"전체 이미지 수: {len(full_dataset)}")
         
         if len(full_dataset) == 0:
-            print("❌ 경고: 데이터셋이 비어있습니다!")
+            print("경고: 데이터셋이 비어있습니다.")
             return None, None, None, None
     except FileNotFoundError as e:
-        print(f"❌ 오류: '{data_dir}' 경로를 찾을 수 없습니다.")
+        print(f"오류: '{data_dir}' 경로를 찾을 수 없습니다.")
         if is_kaggle:
-            print("\n📌 Kaggle 노트북 사용 시:")
+            print("\nKaggle 노트북 사용 시:")
             print("   1. 데이터셋을 'Add Data' 버튼으로 추가했는지 확인하세요")
             print("   2. 데이터 경로가 '/kaggle/input/데이터셋이름/train' 형식인지 확인하세요")
             print("   3. config.yaml의 train_dir을 올바른 경로로 수정하세요")
@@ -70,7 +70,7 @@ def create_dataloaders(data_dir, batch_size=32, img_size=224, split_ratio=(0.8, 
         print("   데이터셋 구조 예시: 'data/train/real', 'data/train/fake'")
         return None, None, None, None
     except Exception as e:
-        print(f"❌ 데이터셋 로드 중 예상치 못한 오류 발생: {e}")
+        print(f"데이터셋 로드 중 예상치 못한 오류 발생: {e}")
         return None, None, None, None
 
     # 데이터셋을 학습/검증/테스트로 분할 (8:1:1)
@@ -86,9 +86,9 @@ def create_dataloaders(data_dir, batch_size=32, img_size=224, split_ratio=(0.8, 
     print(f"분할 완료 -> Train: {len(train_dataset)}, Val: {len(val_dataset)}, Test: {len(test_dataset)}")
 
     # DataLoader 생성
-    # 🚨 [핵심 수정] num_workers를 2로 고정 (속도 최적화)
+    # 핵심 수정: num_workers를 2로 고정 (속도 최적화)
     max_workers = 2
-    print(f"🚀 데이터 로더 워커 수: {max_workers} (속도 최적화)")
+    print(f"데이터 로더 워커 수: {max_workers} (속도 최적화)")
     
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, 
                               num_workers=max_workers, pin_memory=True if torch.cuda.is_available() else False)

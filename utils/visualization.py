@@ -37,8 +37,13 @@ def visualize_gradcam(model: torch.nn.Module, images: torch.Tensor, labels: torc
     
     # Grad-CAM 생성
     gradcam_images = []
-    cam_device = device if isinstance(device, str) else device.type
-    with GradCAM(model=model, target_layers=target_layers, device=cam_device) as cam:
+    cam_device = device if isinstance(device, str) else getattr(device, "type", device)
+    cam = None
+    try:
+        cam = GradCAM(model=model, target_layers=target_layers, use_cuda=(cam_device == "cuda"))
+    except TypeError:
+        cam = GradCAM(model=model, target_layers=target_layers, device=device)
+    with cam as cam_ctx:
         for i in range(images.shape[0]):
             # 예측 클래스에 대한 Grad-CAM
             with torch.no_grad():
@@ -47,7 +52,7 @@ def visualize_gradcam(model: torch.nn.Module, images: torch.Tensor, labels: torc
                 pred_class = pred[0].item()
             
             targets = [ClassifierOutputTarget(pred_class)]
-            grayscale_cam = cam(input_tensor=images[i:i+1], targets=targets)[0]
+            grayscale_cam = cam_ctx(input_tensor=images[i:i+1], targets=targets)[0]
             
             # 이미지 전처리 (정규화 해제)
             img = images[i].cpu().permute(1, 2, 0).numpy()

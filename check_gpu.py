@@ -30,7 +30,7 @@ def check_environment():
             print(f"  할당된 메모리: {allocated:.2f} GB")
             print(f"  예약된 메모리: {reserved:.2f} GB")
     else:
-        print("\n⚠️  CUDA를 사용할 수 없습니다. CPU 모드로 실행됩니다.")
+        print("\nCUDA를 사용할 수 없습니다. CPU 모드로 실행됩니다.")
         print("   학습 시간이 매우 오래 걸릴 수 있습니다.")
     
     # 모델 크기 추정
@@ -69,19 +69,19 @@ def check_environment():
         print(f"\n현재 GPU 메모리: {gpu_memory_gb:.1f} GB")
         
         if gpu_memory_gb < 4:
-            print("⚠️  GPU 메모리가 4GB 미만입니다.")
+            print("GPU 메모리가 4GB 미만입니다.")
             print("   → config_wsl.yaml 사용 권장 (resnet18, vit_small)")
             print("   → 배치 크기를 8-16으로 설정")
         elif gpu_memory_gb < 8:
-            print("✓ GPU 메모리가 4-8GB입니다.")
+            print("GPU 메모리가 4-8GB입니다.")
             print("   → config_wsl.yaml 사용 가능 (resnet18, vit_small)")
             print("   → 배치 크기를 16-32로 설정 가능")
         else:
-            print("✓ GPU 메모리가 충분합니다 (8GB 이상).")
+            print("GPU 메모리가 충분합니다 (8GB 이상).")
             print("   → 기본 config.yaml 사용 가능")
             print("   → 더 큰 모델도 사용 가능")
     else:
-        print("\n⚠️  CPU 모드:")
+        print("\nCPU 모드:")
         print("   → 매우 작은 모델만 사용 (resnet18)")
         print("   → 배치 크기를 4-8로 설정")
         print("   → Colab 사용을 강력히 권장합니다")

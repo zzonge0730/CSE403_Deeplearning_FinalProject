@@ -12,28 +12,28 @@
 ## 프로젝트 구조
 ```
 deeplearning/
-├── data/                    # 데이터셋 저장 폴더
-├── notebooks/               # 실험 노트북
-│   ├── 01_data_pipeline.py
-│   ├── 02_train_cnn.py
-│   ├── 03_train_vit.py
-│   ├── 04_evaluate.py
-│   ├── 05_visualize.py
-│   ├── 06_robustness.py
-│   └── 07_efficiency.py
-├── models/                  # 학습된 모델 저장
-├── results/                 # 실험 결과 저장
-│   ├── metrics/
-│   ├── visualizations/
-│   └── logs/
-├── configs/                 # 설정 파일
-│   └── config.yaml
-└── utils/                   # 유틸리티 함수
-    ├── __init__.py
-    ├── models.py
-    ├── metrics.py
-    ├── visualization.py
-    └── robustness.py
+|-- data/                    # 데이터셋 저장 폴더
+|-- notebooks/               # 실험 노트북
+|   |-- 01_data_pipeline.py
+|   |-- 02_train_cnn.py
+|   |-- 03_train_vit.py
+|   |-- 04_evaluate.py
+|   |-- 05_visualize.py
+|   |-- 06_robustness.py
+|   `-- 07_efficiency.py
+|-- models/                  # 학습된 모델 저장
+|-- results/                 # 실험 결과 저장
+|   |-- metrics/
+|   |-- visualizations/
+|   `-- logs/
+|-- configs/                 # 설정 파일
+|   `-- config.yaml
+`-- utils/                   # 유틸리티 함수
+    |-- __init__.py
+    |-- models.py
+    |-- metrics.py
+    |-- visualization.py
+    `-- robustness.py
 ```
 
 ## 설치 방법

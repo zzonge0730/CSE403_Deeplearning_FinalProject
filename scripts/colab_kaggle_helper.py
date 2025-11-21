@@ -16,7 +16,7 @@ def setup_kaggle_colab():
     uploaded = files.upload()
     
     if 'kaggle.json' not in uploaded:
-        print("❌ kaggle.json 파일을 찾을 수 없습니다.")
+        print("kaggle.json 파일을 찾을 수 없습니다.")
         return False
     
     # 토큰 배치
@@ -26,7 +26,7 @@ def setup_kaggle_colab():
     shutil.move('kaggle.json', '/root/.kaggle/kaggle.json')
     os.chmod('/root/.kaggle/kaggle.json', 0o600)
     
-    print("✓ Kaggle API 설정 완료")
+    print("Kaggle API 설정 완료")
     return True
 
 
@@ -69,7 +69,7 @@ def download_realifake_dataset():
     if fake_source.exists():
         shutil.copytree(fake_source, fake_target, dirs_exist_ok=True)
         fake_count = len(list(fake_target.glob('*')))
-        print(f"✓ FAKE → fake: {fake_count:,}개")
+        print(f"FAKE → fake: {fake_count:,}개")
     
     # REAL → real
     real_source = Path('data/temp/REAL')
@@ -77,13 +77,13 @@ def download_realifake_dataset():
     if real_source.exists():
         shutil.copytree(real_source, real_target, dirs_exist_ok=True)
         real_count = len(list(real_target.glob('*')))
-        print(f"✓ REAL → real: {real_count:,}개")
+        print(f"REAL → real: {real_count:,}개")
     
     # 임시 파일 정리
     shutil.rmtree('data/temp', ignore_errors=True)
     Path('data/realifake.zip').unlink(missing_ok=True)
     
-    print("\n✅ 데이터 준비 완료!")
+print("\n데이터 준비 완료!")
     print(f"위치: {train_dir.absolute()}")
     
     return True

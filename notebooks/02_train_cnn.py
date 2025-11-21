@@ -96,7 +96,7 @@ def train_cnn(config_path="configs/config.yaml"):
     
     # 데이터 로더 None 체크
     if train_loader is None or val_loader is None or class_names is None:
-        print("❌ 데이터 로더 생성 실패. 프로그램을 종료합니다.")
+        print("데이터 로더 생성에 실패했습니다. 프로그램을 종료합니다.")
         return None, None
     
     print(f"Classes: {class_names}")

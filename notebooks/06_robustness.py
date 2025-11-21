@@ -32,27 +32,35 @@ def plot_robustness_results(results: dict, test_type: str, save_path: str):
             labels = []
             
             for key, value in model_results.items():
+                metrics_dict = value if isinstance(value, dict) else {}
                 if key == "original":
                     labels.append("Original")
-                    values.append(value["metrics"][metric])
+                    values.append(metrics_dict.get(metric, None))
                 elif key.startswith(test_type):
                     if test_type == "noise":
-                        level = float(key.split("_")[1])
+                        level = key.split("_", 1)[1]
                         labels.append(f"{test_type}_{level}")
                     else:
-                        quality = int(key.split("_")[1])
+                        quality = key.split("_", 1)[1]
                         labels.append(f"{test_type}_{quality}")
-                    values.append(value["metrics"][metric])
+                    values.append(metrics_dict.get(metric, None))
             
-            ax.plot(range(len(values)), values, marker="o", label=model_name.upper())
+            filtered = [(idx, val, lab) for idx, (val, lab) in enumerate(zip(values, labels)) if val is not None]
+            if not filtered:
+                continue
+            plot_indices = [f[0] for f in filtered]
+            plot_values = [f[1] for f in filtered]
+            plot_labels = [f[2] for f in filtered]
+            ax.plot(plot_indices, plot_values, marker="o", label=model_name.upper())
         
         ax.set_xlabel("Test Condition")
         ax.set_ylabel(metric.replace("_", " ").title())
         ax.set_title(f"{metric.replace('_', ' ').title()} vs {test_type.title()}")
         ax.legend()
         ax.grid(True)
-        ax.set_xticks(range(len(labels)))
-        ax.set_xticklabels(labels, rotation=45, ha="right")
+        if 'plot_labels' in locals() and plot_labels:
+            ax.set_xticks(plot_indices)
+            ax.set_xticklabels(plot_labels, rotation=45, ha="right")
     
     plt.tight_layout()
     plt.savefig(save_path, dpi=150, bbox_inches="tight")

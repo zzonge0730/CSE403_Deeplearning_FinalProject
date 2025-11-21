@@ -53,8 +53,8 @@ python notebooks/02_train_cnn.py
 
 ```
 Epoch 1/20
-Training: 100%|████████| 2181/2181 [XX:XX<XX:XX, X.XXit/s]
+Training: 100%|########| 2181/2181 [XX:XX<XX:XX, X.XXit/s]
 Train Loss: X.XXXX, Train Acc: XX.XX%
-Validation: 100%|████████| 546/546 [XX:XX<XX:XX, X.XXit/s]
+Validation: 100%|########| 546/546 [XX:XX<XX:XX, X.XXit/s]
 Val Loss: X.XXXX, Val Acc: XX.XX%
 ```

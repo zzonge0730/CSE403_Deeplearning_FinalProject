@@ -1,6 +1,6 @@
 # Kaggle 노트북 셀 - 수정된 버전
 
-## 🔧 Cell 1: 환경 설정 및 저장소 클론
+## Cell 1: 환경 설정 및 저장소 클론
 
 ```python
 # 작업 디렉토리 이동 (Kaggle의 쓰기 가능한 공간)
@@ -17,17 +17,17 @@ else:
     %cd CSE403_Deeplearning_FinalProject
 
 # 필요 라이브러리 설치 (버전 충돌 방지)
-print("🔧 라이브러리 설치 중...")
+print("라이브러리 설치 중...")
 
-# ⚠️ 핵심: NumPy를 먼저 고정 설치 (의존성 무시)
-print("1️⃣ NumPy 1.24.3 강제 설치 중...")
+# 핵심: NumPy를 먼저 고정 설치 (의존성 무시)
+print("1단계: NumPy 1.24.3 강제 설치 중...")
 !pip install --no-deps --force-reinstall --ignore-installed "numpy==1.24.3" 2>&1 | tail -3
 
 # Protobuf도 고정 (TensorBoard 호환성)
 !pip install --no-deps --force-reinstall "protobuf==3.20.3" 2>&1 | tail -3
 
 # requirements.txt에서 numpy 라인 제거 후 설치
-print("2️⃣ requirements.txt 설치 중 (numpy 제외)...")
+print("2단계: requirements.txt 설치 중 (numpy 제외)...")
 import tempfile
 with open("requirements.txt", "r") as f:
     lines = f.readlines()
@@ -38,20 +38,20 @@ with open("/tmp/req_no_numpy.txt", "w") as f:
 !pip install -q -r /tmp/req_no_numpy.txt 2>&1 | tail -5
 
 # 추가 패키지
-print("3️⃣ 추가 패키지 설치 중...")
+print("3단계: 추가 패키지 설치 중...")
 !pip install -q thop  # FLOPs 계산용
 
 print("\n" + "="*60)
-print("⚠️ 중요: Python 세션 재시작 필요!")
+print("중요: Python 세션 재시작 필요!")
 print("="*60)
 print("1. 위 셀 실행 완료 후")
 print("2. Kaggle 노트북에서 'Runtime' → 'Restart Session' 클릭")
 print("3. 그 다음 셀부터 다시 실행하세요")
 print("="*60)
-print("\n✅ 환경 설정 완료 (재시작 후 다음 셀 실행)")
+print("\n환경 설정 완료 (재시작 후 다음 셀 실행)")
 ```
 
-## 📂 Cell 2: Kaggle 데이터 경로 자동 감지 및 Config 설정
+## Cell 2: Kaggle 데이터 경로 자동 감지 및 Config 설정
 
 ```python
 import yaml
@@ -73,19 +73,19 @@ if not os.path.exists(real_data_path):
     for alt_path in alternative_paths:
         if os.path.exists(alt_path):
             real_data_path = alt_path
-            print(f"✅ 대안 경로 사용: {real_data_path}")
+            print(f"대안 경로 사용: {real_data_path}")
             break
     else:
         # 경로가 없으면 에러
-        print("❌ 데이터 경로를 찾을 수 없습니다!")
+        print("데이터 경로를 찾을 수 없습니다!")
         print(f"   시도한 경로: {alternative_paths}")
-        print(f"\n💡 해결 방법:")
+        print(f"\n해결 방법:")
         print(f"   1. 아래 코드에서 'real_data_path'를 실제 경로로 수정하세요")
         print(f"   2. Kaggle 노트북에서 데이터셋 구조 확인:")
         print(f"      !ls -la /kaggle/input/")
         raise FileNotFoundError(f"데이터 경로를 찾을 수 없습니다: {alternative_paths}")
 else:
-    print(f"✅ 데이터 경로 확인: {real_data_path}")
+    print(f"데이터 경로 확인: {real_data_path}")
 
 # Config 파일 구조 확인 및 생성
 config_dir = "configs"
@@ -121,7 +121,7 @@ config = {
         "optimizer": "adam",
         "scheduler": "cosine",
         "save_dir": "models",
-        "log_dir": "results/logs"  # ⚠️ 중요: "logs"가 아니라 "results/logs"
+        "log_dir": "results/logs"  # 중요: "logs"가 아니라 "results/logs"
     },
     "evaluation": {
         "metrics": ["accuracy", "f1_score", "precision", "recall", "confusion_matrix"],
@@ -133,14 +133,14 @@ config = {
         "gradcam_layer": "layer4"
     },
     "robustness": {
-        "noise_levels": [0.01, 0.05, 0.1, 0.2],  # ⚠️ 0.0 제거 (의미 없음)
+        "noise_levels": [0.01, 0.05, 0.1, 0.2],  # 0.0 제거 (의미 없음)
         "jpeg_qualities": [95, 85, 75, 65, 55],
-        "save_dir": "results/metrics"  # ⚠️ "results/robustness"가 아니라 "results/metrics"
+        "save_dir": "results/metrics"  # "results/robustness"가 아니라 "results/metrics"
     },
     "efficiency": {
         "num_runs": 100,
         "warmup_runs": 10,
-        "save_dir": "results/metrics"  # ⚠️ "results/efficiency"가 아니라 "results/metrics"
+        "save_dir": "results/metrics"  # "results/efficiency"가 아니라 "results/metrics"
     }
 }
 
@@ -148,13 +148,13 @@ config = {
 with open("configs/config.yaml", "w") as f:
     yaml.dump(config, f, default_flow_style=False, allow_unicode=True)
 
-print(f"✅ 설정 파일 생성 완료!")
+print(f"설정 파일 생성 완료!")
 print(f"   - 데이터 경로: {real_data_path}")
 print(f"   - 배치 크기: {config['data']['batch_size']}")
 print(f"   - Epochs: {config['training']['num_epochs']}")
 ```
 
-## 🚀 Cell 3: 모델 학습 및 평가 (통합 실행)
+## Cell 3: 모델 학습 및 평가 (통합 실행)
 
 ```python
 import sys
@@ -164,38 +164,38 @@ import os
 try:
     import numpy as np
     if int(np.__version__.split('.')[0]) >= 2:
-        print("⚠️ NumPy 2.x 감지! 다운그레이드 중...")
+        print("NumPy 2.x 감지! 다운그레이드 중...")
         !pip install -q --force-reinstall "numpy==1.24.3" 2>&1 | tail -3
         import importlib
         import numpy
         importlib.reload(numpy)
-        print(f"✅ NumPy 버전: {numpy.__version__}")
+        print(f"NumPy 버전: {numpy.__version__}")
 except:
     pass
 
 # 현재 디렉토리 확인
-print(f"📂 현재 작업 디렉토리: {os.getcwd()}")
+print(f"현재 작업 디렉토리: {os.getcwd()}")
 
 # CNN 학습
 print("\n" + "="*60)
-print("🔥 CNN (ResNet-50) 학습 시작...")
+print("CNN (ResNet-50) 학습 시작...")
 print("="*60)
 !python notebooks/02_train_cnn.py
 
 # ViT 학습
 print("\n" + "="*60)
-print("🔥 ViT (Vision Transformer) 학습 시작...")
+print("ViT (Vision Transformer) 학습 시작...")
 print("="*60)
 !python notebooks/03_train_vit.py
 
 # 모델 평가
 print("\n" + "="*60)
-print("📊 모델 평가 수행 중...")
+print("모델 평가 수행 중...")
 print("="*60)
 !python notebooks/04_evaluate.py
 ```
 
-## 🎨 Cell 4: 시각화
+## Cell 4: 시각화
 
 ```python
 import matplotlib.pyplot as plt
@@ -203,7 +203,7 @@ import matplotlib.image as mpimg
 import glob
 import os
 
-print("🎨 시각화(Grad-CAM vs Attention Map) 생성 중...")
+print("시각화(Grad-CAM vs Attention Map) 생성 중...")
 !python notebooks/05_visualize.py
 
 # 결과 이미지 노트북에 바로 출력
@@ -211,7 +211,7 @@ viz_dir = "results/visualizations"
 if os.path.exists(viz_dir):
     viz_files = sorted(glob.glob(os.path.join(viz_dir, "*.png")))
     if viz_files:
-        print(f"\n✅ {len(viz_files)}개의 시각화 이미지 생성됨")
+        print(f"\n{len(viz_files)}개의 시각화 이미지 생성됨")
         for img_path in viz_files[:10]:  # 최대 10개만 표시
             try:
                 plt.figure(figsize=(15, 10))
@@ -221,14 +221,14 @@ if os.path.exists(viz_dir):
                 plt.axis('off')
                 plt.show()
             except Exception as e:
-                print(f"⚠️ 이미지 로드 실패: {img_path} - {e}")
+                print(f"이미지 로드 실패: {img_path} - {e}")
     else:
-        print("⚠️ 시각화 이미지를 찾을 수 없습니다.")
+        print("시각화 이미지를 찾을 수 없습니다.")
 else:
-    print("⚠️ 시각화 디렉토리를 찾을 수 없습니다.")
+    print("시각화 디렉토리를 찾을 수 없습니다.")
 ```
 
-## 🛡️ Cell 5: Robustness 테스트
+## Cell 5: Robustness 테스트
 
 ```python
 import matplotlib.pyplot as plt
@@ -236,15 +236,15 @@ import matplotlib.image as mpimg
 import glob
 import os
 
-print("🛡️ Robustness (노이즈/압축) 테스트 수행 중...")
+print("Robustness (노이즈/압축) 테스트 수행 중...")
 !python notebooks/06_robustness.py
 
 # 결과 그래프 출력
-robust_dir = "results/metrics"  # ⚠️ "results/robustness"가 아님
+robust_dir = "results/metrics"  # "results/robustness"가 아님
 if os.path.exists(robust_dir):
     robust_files = sorted(glob.glob(os.path.join(robust_dir, "*robustness*.png")))
     if robust_files:
-        print(f"\n✅ {len(robust_files)}개의 Robustness 그래프 생성됨")
+        print(f"\n{len(robust_files)}개의 Robustness 그래프 생성됨")
         for img_path in robust_files:
             try:
                 plt.figure(figsize=(12, 8))
@@ -254,50 +254,50 @@ if os.path.exists(robust_dir):
                 plt.axis('off')
                 plt.show()
             except Exception as e:
-                print(f"⚠️ 이미지 로드 실패: {img_path} - {e}")
+                print(f"이미지 로드 실패: {img_path} - {e}")
     else:
-        print("⚠️ Robustness 그래프를 찾을 수 없습니다.")
+        print("Robustness 그래프를 찾을 수 없습니다.")
 else:
-    print("⚠️ 결과 디렉토리를 찾을 수 없습니다.")
+    print("결과 디렉토리를 찾을 수 없습니다.")
 ```
 
-## ⚡ Cell 6: 효율성 측정
+## Cell 6: 효율성 측정
 
 ```python
 import pandas as pd
 import os
 
-print("⚡ 효율성(속도/메모리) 측정 중...")
+print("효율성(속도/메모리) 측정 중...")
 !python notebooks/07_efficiency.py
 
 # 결과 테이블 출력
-efficiency_csv = "results/metrics/efficiency_comparison.csv"  # ⚠️ 경로 수정
+efficiency_csv = "results/metrics/efficiency_comparison.csv"  # 경로 수정
 if os.path.exists(efficiency_csv):
     df = pd.read_csv(efficiency_csv)
-    print("\n📊 효율성 비교 결과:")
+    print("\n효율성 비교 결과:")
     print(df.to_string(index=False))
 else:
-    print("⚠️ 효율성 결과 파일을 찾을 수 없습니다.")
+    print("효율성 결과 파일을 찾을 수 없습니다.")
     print(f"   예상 경로: {efficiency_csv}")
 ```
 
-## 📦 Cell 7: 결과 다운로드
+## Cell 7: 결과 다운로드
 
 ```python
 import os
 from IPython.display import FileLink
 
 # 결과 폴더 압축
-print("📦 결과 압축 중...")
-!zip -r -q final_submission_results.zip results models 2>/dev/null || echo "⚠️ 일부 파일 압축 실패 (무시 가능)"
+print("결과 압축 중...")
+!zip -r -q final_submission_results.zip results models 2>/dev/null || echo "일부 파일 압축 실패 (무시 가능)"
 
 if os.path.exists("final_submission_results.zip"):
     file_size = os.path.getsize("final_submission_results.zip") / (1024 * 1024)  # MB
-    print(f"✅ 압축 완료! 파일 크기: {file_size:.2f} MB")
-    print("\n⬇️ 아래 링크를 클릭하여 결과를 다운로드하세요:")
+    print(f"압축 완료! 파일 크기: {file_size:.2f} MB")
+    print("\n아래 링크를 클릭하여 결과를 다운로드하세요:")
     display(FileLink('final_submission_results.zip'))
 else:
-    print("⚠️ 압축 파일을 생성할 수 없습니다.")
+    print("압축 파일을 생성할 수 없습니다.")
     print("   개별 폴더를 수동으로 다운로드하세요:")
     print("   - results/")
     print("   - models/")
@@ -305,7 +305,7 @@ else:
 
 ---
 
-## 🔍 주요 수정 사항
+## 주요 수정 사항
 
 ### 1. **Config 구조 일관성**
 - `log_dir`: `"results/logs"` (코드가 기대하는 경로)
