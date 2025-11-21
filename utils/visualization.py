@@ -37,21 +37,7 @@ def visualize_gradcam(model: torch.nn.Module, images: torch.Tensor, labels: torc
     
     # Grad-CAM 생성
     gradcam_images = []
-    cam_sig = {}
-    try:
-        import inspect
-        cam_sig = inspect.signature(GradCAM.__init__).parameters
-    except Exception:
-        cam_sig = {}
-
-    cam_instance = None
-    cam_device = device if isinstance(device, str) else getattr(device, "type", "cpu")
-    if "device" in cam_sig:
-        cam_instance = GradCAM(model=model, target_layers=target_layers, device=device)
-    elif "use_cuda" in cam_sig:
-        cam_instance = GradCAM(model=model, target_layers=target_layers, use_cuda=(cam_device == "cuda"))
-    else:
-        cam_instance = GradCAM(model=model, target_layers=target_layers)
+    cam_instance = GradCAM(model=model, target_layers=target_layers)
 
     with cam_instance as cam_ctx:
         for i in range(images.shape[0]):
