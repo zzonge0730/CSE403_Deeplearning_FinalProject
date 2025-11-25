@@ -23,44 +23,37 @@ def plot_robustness_results(results: dict, test_type: str, save_path: str):
     
     fig, axes = plt.subplots(2, 2, figsize=(12, 10))
     axes = axes.flatten()
-    
+
     for idx, metric in enumerate(metrics):
         ax = axes[idx]
         
         for model_name, model_results in results.items():
-            values = []
-            labels = []
-            
+            labels, values = [], []
+
             for key, value in model_results.items():
-                metrics_dict = value if isinstance(value, dict) else {}
+                metric_dict = value.get("metrics", value) if isinstance(value, dict) else {}
+                if metric not in metric_dict:
+                    continue
+
                 if key == "original":
                     labels.append("Original")
-                    values.append(metrics_dict.get(metric, None))
                 elif key.startswith(test_type):
-                    if test_type == "noise":
-                        level = key.split("_", 1)[1]
-                        labels.append(f"{test_type}_{level}")
-                    else:
-                        quality = key.split("_", 1)[1]
-                        labels.append(f"{test_type}_{quality}")
-                    values.append(metrics_dict.get(metric, None))
-            
-            filtered = [(idx, val, lab) for idx, (val, lab) in enumerate(zip(values, labels)) if val is not None]
-            if not filtered:
-                continue
-            plot_indices = [f[0] for f in filtered]
-            plot_values = [f[1] for f in filtered]
-            plot_labels = [f[2] for f in filtered]
-            ax.plot(plot_indices, plot_values, marker="o", label=model_name.upper())
-        
+                    suffix = key.split("_", 1)[1]
+                    labels.append(f"{test_type}_{suffix}")
+                else:
+                    continue
+                values.append(metric_dict[metric])
+
+            if labels and values:
+                ax.plot(range(len(values)), values, marker="o", label=model_name.upper())
+                ax.set_xticks(range(len(labels)))
+                ax.set_xticklabels(labels, rotation=45, ha="right")
+
         ax.set_xlabel("Test Condition")
         ax.set_ylabel(metric.replace("_", " ").title())
         ax.set_title(f"{metric.replace('_', ' ').title()} vs {test_type.title()}")
         ax.legend()
         ax.grid(True)
-        if 'plot_labels' in locals() and plot_labels:
-            ax.set_xticks(plot_indices)
-            ax.set_xticklabels(plot_labels, rotation=45, ha="right")
     
     plt.tight_layout()
     plt.savefig(save_path, dpi=150, bbox_inches="tight")
@@ -77,11 +70,12 @@ def test_robustness(config_path="configs/config.yaml"):
     print(f"Using device: {device}")
     
     # 데이터 로더 생성
-    _, _, test_loader, class_names = create_dataloaders(
+    train_loader, val_loader, class_names = create_dataloaders(
         data_dir=config["data"]["test_dir"] if os.path.exists(config["data"]["test_dir"]) else config["data"]["train_dir"],
         batch_size=config["data"]["batch_size"],
         img_size=config["data"]["img_size"]
     )
+    test_loader = val_loader
     
     results = {}
     save_dir = config["robustness"]["save_dir"]
