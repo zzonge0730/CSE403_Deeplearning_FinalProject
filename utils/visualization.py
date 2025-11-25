@@ -2,16 +2,33 @@
 시각화 유틸리티 (Grad-CAM, Attention Map 등)
 """
 
-import torch
-import numpy as np
-import matplotlib.pyplot as plt
-from PIL import Image
-import cv2
-from pytorch_grad_cam import GradCAM, HiResCAM, ScoreCAM, GradCAMPlusPlus, AblationCAM, XGradCAM, EigenCAM
-from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
-from pytorch_grad_cam.utils.image import show_cam_on_image
-from typing import List, Tuple, Optional
 import os
+import warnings
+from typing import List, Tuple, Optional
+
+import cv2
+import numpy as np
+import torch
+from PIL import Image
+from pytorch_grad_cam import (
+    AblationCAM,
+    EigenCAM,
+    GradCAM,
+    GradCAMPlusPlus,
+    HiResCAM,
+    ScoreCAM,
+    XGradCAM,
+)
+from pytorch_grad_cam.utils.image import show_cam_on_image
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+
+try:
+    import matplotlib.pyplot as plt
+except Exception as exc:  # pragma: no cover - matplotlib optional in Kaggle runtime
+    plt = None  # type: ignore
+    _MATPLOTLIB_IMPORT_ERROR = exc
+else:
+    _MATPLOTLIB_IMPORT_ERROR = None
 
 
 def visualize_gradcam(model: torch.nn.Module, images: torch.Tensor, labels: torch.Tensor,
@@ -154,9 +171,23 @@ def visualize_vit_attention(model: torch.nn.Module, images: torch.Tensor,
     return attention_images
 
 
-def save_gradcam_images(images: np.ndarray, labels: torch.Tensor, 
+def _ensure_matplotlib(feature: str) -> bool:
+    """Check whether matplotlib is available before plotting."""
+    if plt is not None:
+        return True
+    warnings.warn(
+        f"Matplotlib is unavailable ({_MATPLOTLIB_IMPORT_ERROR}); "
+        f"skipping {feature}.",
+        RuntimeWarning,
+    )
+    return False
+
+
+def save_gradcam_images(images: np.ndarray, labels: torch.Tensor,
                         class_names: List[str], save_path: str):
     """Grad-CAM 이미지 저장"""
+    if not _ensure_matplotlib("Grad-CAM visualization"):
+        return
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     
     fig, axes = plt.subplots(2, len(images) // 2 + len(images) % 2, figsize=(15, 6))
@@ -174,6 +205,8 @@ def save_gradcam_images(images: np.ndarray, labels: torch.Tensor,
 
 def save_attention_images(images: np.ndarray, class_names: List[str], save_path: str):
     """Attention 이미지 저장"""
+    if not _ensure_matplotlib("attention visualization"):
+        return
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     
     fig, axes = plt.subplots(2, len(images) // 2 + len(images) % 2, figsize=(15, 6))
@@ -189,31 +222,43 @@ def save_attention_images(images: np.ndarray, class_names: List[str], save_path:
     plt.close()
 
 
-def plot_confusion_matrix(y_true: np.ndarray, y_pred: np.ndarray, 
+def plot_confusion_matrix(y_true: np.ndarray, y_pred: np.ndarray,
                          class_names: List[str] = ["real", "fake"],
                          save_path: Optional[str] = None):
     """Confusion Matrix 시각화"""
+    if not _ensure_matplotlib("confusion matrix plotting"):
+        return
     from sklearn.metrics import confusion_matrix
-    import seaborn as sns
-    
+
+    try:
+        import seaborn as sns
+    except Exception as exc:  # pragma: no cover - seaborn optional
+        warnings.warn(
+            f"Seaborn is unavailable ({exc}); skipping confusion matrix plot.",
+            RuntimeWarning,
+        )
+        return
+
     cm = confusion_matrix(y_true, y_pred)
-    
+
     plt.figure(figsize=(8, 6))
-    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", 
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
                 xticklabels=class_names, yticklabels=class_names)
     plt.ylabel("True Label")
     plt.xlabel("Predicted Label")
     plt.title("Confusion Matrix")
-    
+
     if save_path:
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
         plt.savefig(save_path, dpi=150, bbox_inches="tight")
-    
+
     plt.close()
 
 
 def plot_training_history(history: dict, save_path: Optional[str] = None):
     """학습 히스토리 시각화"""
+    if not _ensure_matplotlib("training history plotting"):
+        return
     fig, axes = plt.subplots(1, 2, figsize=(12, 4))
     
     # Loss
