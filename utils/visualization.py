@@ -53,12 +53,17 @@ def visualize_gradcam(model: torch.nn.Module, images: torch.Tensor, labels: torc
     images = images.to(device)
 
     # pytorch-grad-cam은 device 인자를 직접 받지 않고 use_cuda로 제어한다.
-    device_name = str(device)
-    use_cuda = device_name.startswith("cuda") and torch.cuda.is_available()
-
     # Grad-CAM 생성
     gradcam_images = []
-    cam_instance = GradCAM(model=model, target_layers=target_layers, use_cuda=use_cuda)
+    cam_kwargs = {"model": model, "target_layers": target_layers}
+    try:
+        cam_instance = GradCAM(**cam_kwargs)
+    except TypeError:
+        # 구 버전 호환: use_cuda 인자를 지원하는 경우에만 전달
+        device_name = str(device)
+        use_cuda = device_name.startswith("cuda") and torch.cuda.is_available()
+        cam_kwargs["use_cuda"] = use_cuda
+        cam_instance = GradCAM(**cam_kwargs)
 
     with cam_instance as cam_ctx:
         for i in range(images.shape[0]):
