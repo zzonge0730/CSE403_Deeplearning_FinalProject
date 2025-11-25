@@ -117,11 +117,12 @@ def visualize_vit_attention(model: torch.nn.Module, images: torch.Tensor,
     
     attention_images = []
     
+    attn_map = None
     with torch.no_grad():
         # ViT의 attention 가중치 추출
         # timm의 ViT 모델은 forward_features 메서드를 제공
         if hasattr(model, "forward_features"):
-            features = model.forward_features(images)
+            _ = model.forward_features(images)
         else:
             # 직접 attention 추출
             x = model.patch_embed(images)
@@ -131,17 +132,18 @@ def visualize_vit_attention(model: torch.nn.Module, images: torch.Tensor,
             # Attention 블록들을 통과하며 attention 가중치 수집
             attentions = []
             for block in model.blocks:
-                x, attn = block.attn(x, return_attention=True)
-                attentions.append(attn)
+                attn = getattr(block.attn, "get_attn", None)
+                if callable(attn):
+                    x, attn_map_block = attn(return_attention=True)
+                else:
+                    x, attn_map_block = block.attn(x, return_attention=True)
+                attentions.append(attn_map_block)
             
             # 마지막 attention map 사용
             if len(attentions) > 0:
                 attn_map = attentions[-1].mean(dim=1)[:, 0, 1:]  # CLS 토큰 제외
-            else:
-                # 간단한 대체 방법
-                outputs = model(images)
-                attn_map = None
-        
+        if attn_map is None:
+            outputs = model(images)
         # Attention map을 이미지 크기로 리샘플링
         for i in range(images.shape[0]):
             img = images[i].cpu().permute(1, 2, 0).numpy()
