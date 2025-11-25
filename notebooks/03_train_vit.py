@@ -9,7 +9,11 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from torch.utils.tensorboard import SummaryWriter
+
+try:
+    from torch.utils.tensorboard import SummaryWriter
+except (ImportError, ModuleNotFoundError):
+    SummaryWriter = None  # type: ignore
 from tqdm import tqdm
 import json
 
@@ -146,10 +150,12 @@ def train_vit(config_path="configs/config.yaml"):
             optimizer, step_size=10, gamma=0.1
         )
     
-    # TensorBoard 로거
+    # TensorBoard 로거 (선택 사항)
     log_dir = os.path.join(config["training"]["log_dir"], "vit")
     os.makedirs(log_dir, exist_ok=True)
-    writer = SummaryWriter(log_dir)
+    writer = SummaryWriter(log_dir) if SummaryWriter else None
+    if writer is None:
+        print("TensorBoard SummaryWriter를 사용할 수 없어 로그를 파일로 남기지 않습니다.")
     
     # 학습 히스토리
     history = {
@@ -182,12 +188,13 @@ def train_vit(config_path="configs/config.yaml"):
         history["val_loss"].append(val_loss)
         history["val_acc"].append(val_acc)
         
-        # TensorBoard 로깅
-        writer.add_scalar("Loss/Train", train_loss, epoch)
-        writer.add_scalar("Loss/Val", val_loss, epoch)
-        writer.add_scalar("Accuracy/Train", train_acc, epoch)
-        writer.add_scalar("Accuracy/Val", val_acc, epoch)
-        writer.add_scalar("LR", optimizer.param_groups[0]["lr"], epoch)
+        # TensorBoard 로깅 (필요 시)
+        if writer:
+            writer.add_scalar("Loss/Train", train_loss, epoch)
+            writer.add_scalar("Loss/Val", val_loss, epoch)
+            writer.add_scalar("Accuracy/Train", train_acc, epoch)
+            writer.add_scalar("Accuracy/Val", val_acc, epoch)
+            writer.add_scalar("LR", optimizer.param_groups[0]["lr"], epoch)
         
         print(f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.2f}%")
         print(f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%")
@@ -214,7 +221,8 @@ def train_vit(config_path="configs/config.yaml"):
                 print(f"Best Val Accuracy: {best_val_acc:.2f}%")
                 break
     
-    writer.close()
+    if writer:
+        writer.close()
     
     # 최종 모델 저장
     final_model_path = os.path.join(config["training"]["save_dir"], f"vit_{config['models']['vit']['name']}_final.pth")
