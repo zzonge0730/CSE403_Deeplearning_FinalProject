@@ -70,12 +70,13 @@ def test_robustness(config_path="configs/config.yaml"):
     print(f"Using device: {device}")
     
     # 데이터 로더 생성
-    train_loader, val_loader, class_names = create_dataloaders(
+    train_loader, val_loader, test_loader, class_names = create_dataloaders(
         data_dir=config["data"]["test_dir"] if os.path.exists(config["data"]["test_dir"]) else config["data"]["train_dir"],
         batch_size=config["data"]["batch_size"],
         img_size=config["data"]["img_size"]
     )
-    test_loader = val_loader
+    if test_loader is None:
+        test_loader = val_loader
     
     results = {}
     save_dir = config["robustness"]["save_dir"]
