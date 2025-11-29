@@ -255,6 +255,8 @@ def plot_confusion_matrix(y_true: np.ndarray, y_pred: np.ndarray,
     plt.ylabel("True Label")
     plt.xlabel("Predicted Label")
     plt.title("Confusion Matrix")
+    # seaborn/matplotlib bug: last row can be cut off unless we reset ylim
+    plt.ylim(len(cm), 0)
 
     if save_path:
         os.makedirs(os.path.dirname(save_path), exist_ok=True)

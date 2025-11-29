@@ -330,3 +330,12 @@ else:
 - `noise_levels`에서 `0.0` 제거 (의미 없음)
 - `num_workers`는 data_pipeline에서 자동 처리됨
 
+### 6. **NumPy 2.x + Matplotlib 호환**
+- Kaggle 기본 런타임은 `numpy==2.2.6`을 포함합니다. `matplotlib` wheel이 NumPy 1.x로 빌드되어 있으면 `_ARRAY_API not found`가 발생할 수 있습니다.
+- **방법 A**: 아래 명령을 *requirements 설치 이후*에 추가해 소스에서 다시 빌드하세요.
+  ```python
+  !pip install -q --no-binary matplotlib --no-deps --force-reinstall "matplotlib==3.9.1"
+  ```
+  빌드 시간은 1~2분 정도이며, Save Version 실행 전 셀에 넣어 두면 자동으로 적용됩니다.
+- **방법 B**: Matplotlib이 없어도 본 저장소는 자동으로 시각화 단계를 건너뛰도록 수정되어 있으므로, 지표 계산만 필요하다면 추가 조치 없이도 학습·평가가 완료됩니다(Confusion Matrix/시각화 이미지만 미생성).
+
